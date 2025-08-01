@@ -2,10 +2,13 @@ import styles from "@/app/page.module.css";
 
 export default function Home() {
   return (
-    <>
-      <h1>Impossible Password</h1>
-      <p>Try to choose an impossible password!</p>
-      <div className={styles.container}></div>
-    </>
+    <div className={styles.container}>
+      <p className={styles.title}>Impossible Password</p>
+      <div className={styles.input}>
+        <p>Choose a password</p>
+        <input type="text" />
+      </div>
+      <div className={styles.rules}></div>
+    </div>
   );
 }
