@@ -7,29 +7,21 @@ export default function Home() {
   const [password, setPassword] = useState("");
 
   const rules = [
-    "Minimum 5 characters",
-    "Must include at least 1 number",
-    "Must include at least 1 capital letter",
-    "Must include at least 1 lowercase letter",
-    "Must include the full name of one month (e.g. 'January')",
-    "Must include at least 3 special characters (e.g. @, #, $)",
-    "All digits must multiply to exactly 36",
-    "Must include at least one Greek letter (e.g. α, β, γ)",
-    "Must contain a prime number written in words (e.g. 'seven')",
-    "All vowels (a, e, i, o, u) must appear in alphabetical order",
-    "Reversed password must form a valid English word or palindrome",
-    "Sum of all character charCodes must be divisible by 101",
-    "Must include at least 2 different emoji",
-    "Must include the abbreviation of 2 chemical elements (e.g. 'Na', 'Cl')",
-    "Must contain a full pangram fragment (e.g. 'quick brown fox')",
-    "Cannot contain the same character more than twice",
-    "Must contain exactly one underscore (_) and one dash (-)",
-    "Must contain a valid Roman numeral (e.g. 'XIV')",
-    "Must start and end with a different letter",
-    "Must contain a sequence of 3 increasing digits (e.g. 456)",
-    "Must not contain any whitespace",
-    "Length must be a Fibonacci number (e.g. 8, 13, 21, 34...)",
-    "Must contain the name of a programming language (e.g. 'Python', 'Java')",
+    "Minimum 8 characters",
+    "At least 1 number",
+    "At least 1 capital letter",
+    "At least 1 lowercase letter",
+    "Must include a full month name",
+    "At least 2 special characters",
+    "All digits must multiply to 36",
+    "Must include exactly one underscore (_)",
+    "Must include exactly one dash (-)",
+    "Must contain a sequence of 3 increasing digits",
+    "No whitespace allowed",
+    "No character can appear more than twice",
+    "Must end with a special character",
+    "Must include a programming language",
+    "Length must be exactly 21 characters",
   ];
 
   function productOfDigits(str) {
@@ -38,11 +30,28 @@ export default function Home() {
     return digits.reduce((acc, d) => acc * Number(d), 1);
   }
 
+  function hasIncreasingDigits(str) {
+    const digits = str.match(/\d/g)?.map(Number) || [];
+    for (let i = 0; i < digits.length - 2; i++) {
+      if (digits[i] + 1 === digits[i + 1] && digits[i] + 2 === digits[i + 2]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function countOccurrences(str) {
+    const count = {};
+    for (let char of str) {
+      count[char] = (count[char] || 0) + 1;
+    }
+    return count;
+  }
+
   function checkRule(index) {
-    const lower = password.toLowerCase();
     switch (index) {
       case 0:
-        return password.length >= 5;
+        return password.length >= 8;
       case 1:
         return /\d/.test(password);
       case 2:
@@ -63,99 +72,29 @@ export default function Home() {
           "october",
           "november",
           "december",
-        ].some((month) => lower.includes(month));
+        ].some((m) => password.toLowerCase().includes(m));
       case 5:
-        return (password.match(/[@#$%^&*()_\-+=!]/g) || []).length >= 3;
+        return (password.match(/[@#$%^&*!?]/g) || []).length >= 2;
       case 6:
         return productOfDigits(password) === 36;
       case 7:
-        return /[α-ωΑ-Ω]/.test(password);
+        return (password.match(/_/g) || []).length === 1;
       case 8:
-        return ["two", "three", "five", "seven", "eleven", "thirteen"].some(
-          (word) => lower.includes(word)
-        );
+        return (password.match(/-/g) || []).length === 1;
       case 9:
-        const vowels = ["a", "e", "i", "o", "u"];
-        let lastIndex = -1;
-        return vowels.every((v) => {
-          const i = password.indexOf(v, lastIndex + 1);
-          if (i === -1) return false;
-          lastIndex = i;
-          return true;
-        });
+        return hasIncreasingDigits(password);
       case 10:
-        const reversed = password.split("").reverse().join("");
-        return reversed === password || /^[a-z]+$/i.test(reversed);
+        return !/\s/.test(password);
       case 11:
-        const sum = [...password].reduce((acc, c) => acc + c.charCodeAt(0), 0);
-        return sum % 101 === 0;
+        return Object.values(countOccurrences(password)).every((v) => v <= 2);
       case 12:
-        const emojiRegex = /\p{Emoji}/gu;
-        return (
-          (password.match(emojiRegex) || []).filter(
-            (v, i, a) => a.indexOf(v) === i
-          ).length >= 2
-        );
+        return /[@#$%^&*!?]$/.test(password);
       case 13:
-        const elements = [
-          "H",
-          "He",
-          "Li",
-          "Be",
-          "B",
-          "C",
-          "N",
-          "O",
-          "F",
-          "Ne",
-          "Na",
-          "Cl",
-          "K",
-          "Ca",
-        ];
-        return elements.filter((el) => password.includes(el)).length >= 2;
-      case 14:
-        return password.toLowerCase().includes("quick brown fox");
-      case 15:
-        return [...new Set(password)].every(
-          (char) => password.split(char).length - 1 <= 2
-        );
-      case 16:
-        return (
-          password.includes("_") &&
-          password.includes("-") &&
-          password.indexOf("_") === password.lastIndexOf("_") &&
-          password.indexOf("-") === password.lastIndexOf("-")
-        );
-      case 17:
-        return /\bM{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})\b/i.test(
+        return /(python|java|rust|go|ruby|c\+\+|typescript|javascript)/i.test(
           password
         );
-      case 18:
-        return (
-          password[0]?.toLowerCase() !==
-          password[password.length - 1]?.toLowerCase()
-        );
-      case 19:
-        return (
-          /(?=.*(\d)(\d)(\d))/.test(password) &&
-          [...password.matchAll(/(\d)(\d)(\d)/g)].some((m) => {
-            const [a, b, c] = m.slice(1).map(Number);
-            return a + 1 === b && b + 1 === c;
-          })
-        );
-      case 20:
-        return !/\s/.test(password);
-      case 21:
-        const fib = [0, 1];
-        while (fib[fib.length - 1] < password.length) {
-          fib.push(fib[fib.length - 1] + fib[fib.length - 2]);
-        }
-        return fib.includes(password.length);
-      case 22:
-        return ["python", "java", "c++", "javascript", "ruby"].some((lang) =>
-          lower.includes(lang)
-        );
+      case 14:
+        return password.length === 21;
       default:
         return false;
     }
@@ -169,10 +108,23 @@ export default function Home() {
       <p className={styles.title}>Impossible Password</p>
       <div className={styles.input}>
         <p>Choose a password</p>
-        <input
-          type="text"
+        <textarea
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          rows={1}
+          style={{
+            width: "100%",
+            resize: "none",
+            overflow: "hidden",
+            lineHeight: "1",
+            borderRadius: "12px",
+            padding: "12px",
+            fontSize: "30px",
+          }}
+          onInput={(e) => {
+            e.target.style.height = "auto";
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
         />
       </div>
       <div className={styles.rulesContainer}>
