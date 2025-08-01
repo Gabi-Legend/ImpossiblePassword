@@ -1,28 +1,28 @@
 "use client";
 
-import styles from "@/app/page.module.css";
 import { useState } from "react";
+import styles from "@/app/page.module.css";
+
+const rules = [
+  "Minimum 8 characters",
+  "At least 1 number",
+  "At least 1 capital letter",
+  "At least 1 lowercase letter",
+  "Must include a full month name",
+  "At least 2 special characters",
+  "All digits must multiply to 36",
+  "Must include exactly one underscore (_)",
+  "Must include exactly one dash (-)",
+  "Must contain a sequence of 3 increasing digits",
+  "No whitespace allowed",
+  "No character can appear more than twice",
+  "Must end with a special character",
+  "Must include a programming language",
+  "Length must be exactly 21 characters",
+];
 
 export default function Home() {
   const [password, setPassword] = useState("");
-
-  const rules = [
-    "Minimum 8 characters",
-    "At least 1 number",
-    "At least 1 capital letter",
-    "At least 1 lowercase letter",
-    "Must include a full month name",
-    "At least 2 special characters",
-    "All digits must multiply to 36",
-    "Must include exactly one underscore (_)",
-    "Must include exactly one dash (-)",
-    "Must contain a sequence of 3 increasing digits",
-    "No whitespace allowed",
-    "No character can appear more than twice",
-    "Must end with a special character",
-    "Must include a programming language",
-    "Length must be exactly 21 characters",
-  ];
 
   function productOfDigits(str) {
     const digits = str.match(/\d/g);
@@ -105,22 +105,15 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <p className={styles.title}>Impossible Password</p>
-      <div className={styles.input}>
-        <p>Choose a password</p>
+      <h1 className={styles.title}>Impossible Password</h1>
+      <div className={styles.inputContainer}>
+        <label htmlFor="passwordInput">Choose a password</label>
         <textarea
+          id="passwordInput"
+          className={styles.textarea}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
           rows={1}
-          style={{
-            width: "100%",
-            resize: "none",
-            overflow: "hidden",
-            lineHeight: "1",
-            borderRadius: "12px",
-            padding: "12px",
-            fontSize: "30px",
-          }}
+          onChange={(e) => setPassword(e.target.value)}
           onInput={(e) => {
             e.target.style.height = "auto";
             e.target.style.height = `${e.target.scrollHeight}px`;
@@ -128,14 +121,22 @@ export default function Home() {
         />
       </div>
       <div className={styles.rulesContainer}>
-        {rules.slice(0, stepsToShow + 1).map((rule, index) => (
-          <div key={index} style={{ marginBottom: "8px" }}>
-            {checkRule(index) ? "✅ " : "❌ "}
-            {rule}
-          </div>
-        ))}
+        {rules.slice(0, stepsToShow + 1).map((rule, index) => {
+          const passed = checkRule(index);
+          return (
+            <div
+              key={index}
+              className={`${styles.ruleItem} ${
+                passed ? styles.pass : styles.fail
+              }`}
+            >
+              <span className={styles.ruleIcon}>{passed ? "✅" : "❌"}</span>
+              <span>{rule}</span>
+            </div>
+          );
+        })}
         {stepsToShow === rules.length && (
-          <div style={{ marginTop: "20px", color: "green" }}>
+          <div className={styles.successMessage}>
             🎉 Password meets all the rules!
           </div>
         )}
