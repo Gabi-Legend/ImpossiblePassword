@@ -8,120 +8,98 @@ export default function Home() {
   const textareaRef = useRef(null);
 
   const rules = [
-    "Minimum 5 characters",
+    "Minimum 6 characters",
     "Must include at least 1 number",
     "Must include at least 1 capital letter",
     "Must include at least 1 lowercase letter",
-    "Must include the full name of one month (e.g. 'January')",
-    "Must include at least 3 special characters (e.g. @, #, $)",
-    "All digits must multiply to exactly 36",
-    "Must include at least one Greek letter (e.g. α, β, γ)",
-    "Must contain a prime number written in words (e.g. 'seven')",
-    "All vowels (a, e, i, o, u) must appear in alphabetical order",
-    "Reversed password must form a valid English word or palindrome",
-    "Sum of all character charCodes must be divisible by 101",
-    "Must include at least 2 different emoji",
-    "Must include the abbreviation of 2 chemical elements (e.g. 'Na', 'Cl')",
-    "Must contain a full pangram fragment (e.g. 'quick brown fox')",
-    "Cannot contain the same character more than twice",
-    "Must contain exactly one underscore (_) and one dash (-)",
-    "Must contain a valid Roman numeral (e.g. 'XIV')",
-    "Must start and end with a different letter",
-    "Must contain a sequence of 3 increasing digits (e.g. 456)",
-    "Must not contain any whitespace",
-    "Length must be a Fibonacci number (e.g. 8, 13, 21, 34...)",
-    "Must contain the name of a programming language (e.g. 'Python', 'Java')",
+    "Must include at least 1 special character (e.g. @, #, $, %, &, !)",
+    "Must include the full name of one month (e.g. 'March')",
+    "Must include a 3-letter English word (e.g. 'cat', 'sun')",
+    "All digits must add up to an even number",
+    "Must include a Greek letter (e.g. α, β, γ) or math symbol (e.g. ∑, √)",
+    "Must contain a color name (e.g. 'red', 'blue')",
+    "Cannot have the same character more than 3 times total",
+    "Must contain a chemical element abbreviation (e.g. 'Na', 'Fe')",
+    "Must include the name of a programming language (e.g. 'Python')",
+    "Must contain a palindrome fragment (e.g. 'eve', 'ana')",
+    "Must not start and end with the same character",
   ];
 
-  function productOfDigits(str) {
-    const digits = str.match(/\d/g);
-    if (!digits || digits.includes("0")) return 0;
-    return digits.reduce((acc, d) => acc * Number(d), 1);
+  function hasSpecialChar(str) {
+    return /[@#$%^&*!&()\-_+=]/.test(str);
   }
 
-  function containsGreekLetter(str) {
-    return /[αβγδεζηθικλμνξοπρστυφχψω]/i.test(str);
-  }
-
-  function containsPrimeWord(str) {
-    const primes = [
-      "two",
-      "three",
-      "five",
-      "seven",
-      "eleven",
-      "thirteen",
-      "seventeen",
-      "nineteen",
-      "twentythree",
-      "twenty-nine",
+  function hasMonth(str) {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
-    return primes.some((p) => str.toLowerCase().includes(p));
+    return months.some((month) =>
+      str.toLowerCase().includes(month.toLowerCase())
+    );
   }
 
-  function vowelsInOrder(str) {
-    const vowels = str.toLowerCase().match(/[aeiou]/g);
-    if (!vowels) return false;
-    const ordered = [...vowels].sort();
-    for (let i = 0; i < vowels.length; i++) {
-      if (vowels[i] !== ordered[i]) return false;
-    }
-    return true;
+  function has3LetterWord(str) {
+    const words = ["cat", "sun", "map", "run", "dog", "car"];
+    return words.some((word) => str.toLowerCase().includes(word));
   }
 
-  function isPalindromeOrEnglishWord(str) {
-    const reversed = str.toLowerCase().split("").reverse().join("");
-    if (str.toLowerCase() === reversed) return true;
-
-    // Simplified dictionary check (example)
-    const dictionary = ["level", "madam", "radar", "deed", "civic"];
-    return dictionary.includes(reversed);
+  function digitsSumEven(str) {
+    const digits = str.match(/\d/g);
+    if (!digits) return false;
+    const sum = digits.reduce((acc, d) => acc + Number(d), 0);
+    return sum % 2 === 0;
   }
 
-  function sumCharCodesDivisibleBy101(str) {
-    const sum = [...str].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-    return sum % 101 === 0;
+  function hasGreekOrMathSymbol(str) {
+    return /[α-ωΑ-Ω∑√π∞∆]/.test(str);
   }
 
-  function countDifferentEmojis(str) {
-    const emojiRegex = /\p{Emoji}/gu;
-    const emojis = str.match(emojiRegex) || [];
-    const uniqueEmojis = new Set(emojis);
-    return uniqueEmojis.size >= 2;
+  function hasColor(str) {
+    const colors = [
+      "red",
+      "blue",
+      "green",
+      "yellow",
+      "black",
+      "white",
+      "orange",
+    ];
+    return colors.some((color) => str.toLowerCase().includes(color));
   }
 
-  function containsChemicalElements(str) {
-    const elements = ["Na", "Cl", "He", "Li", "Be", "C", "N", "O", "F", "Ne"];
-    let found = 0;
-    elements.forEach((el) => {
-      if (str.includes(el)) found++;
-    });
-    return found >= 2;
-  }
-
-  function containsPangramFragment(str) {
-    return str.toLowerCase().includes("quick brown fox");
-  }
-
-  function maxTwoSameChars(str) {
+  function maxThreeSameChars(str) {
     const counts = {};
     for (let ch of str) {
       counts[ch] = (counts[ch] || 0) + 1;
-      if (counts[ch] > 2) return false;
+      if (counts[ch] > 3) return false;
     }
     return true;
   }
 
-  function exactlyOneUnderscoreAndDash(str) {
-    const underscoreCount = (str.match(/_/g) || []).length;
-    const dashCount = (str.match(/-/g) || []).length;
-    return underscoreCount === 1 && dashCount === 1;
+  function hasElement(str) {
+    const elements = ["Na", "Cl", "Fe", "H", "O", "C", "Li", "He"];
+    return elements.some((el) => str.includes(el));
   }
 
-  function validRomanNumeral(str) {
-    return /^(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))$/i.test(
-      str
-    );
+  function hasProgrammingLanguage(str) {
+    const langs = ["python", "java", "ruby", "go", "swift", "csharp"];
+    return langs.some((lang) => str.toLowerCase().includes(lang));
+  }
+
+  function hasPalindromeFragment(str) {
+    const frags = ["eve", "ana", "bob", "pop", "madam"];
+    return frags.some((p) => str.toLowerCase().includes(p));
   }
 
   function startEndDifferent(str) {
@@ -129,50 +107,10 @@ export default function Home() {
     return str[0].toLowerCase() !== str[str.length - 1].toLowerCase();
   }
 
-  function threeIncreasingDigits(str) {
-    const digits = str.match(/\d/g);
-    if (!digits) return false;
-    for (let i = 0; i < digits.length - 2; i++) {
-      const a = Number(digits[i]);
-      const b = Number(digits[i + 1]);
-      const c = Number(digits[i + 2]);
-      if (b === a + 1 && c === b + 1) return true;
-    }
-    return false;
-  }
-
-  function noWhitespace(str) {
-    return !/\s/.test(str);
-  }
-
-  function isFibonacci(num) {
-    if (num <= 0) return false;
-    const isPerfectSquare = (x) => {
-      const s = Math.floor(Math.sqrt(x));
-      return s * s === x;
-    };
-    return (
-      isPerfectSquare(5 * num * num + 4) || isPerfectSquare(5 * num * num - 4)
-    );
-  }
-
-  function containsProgrammingLanguage(str) {
-    const langs = [
-      "python",
-      "java",
-      "javascript",
-      "ruby",
-      "csharp",
-      "go",
-      "swift",
-    ];
-    return langs.some((lang) => str.toLowerCase().includes(lang));
-  }
-
   function checkRule(ruleIndex) {
     switch (ruleIndex) {
       case 0:
-        return password.length >= 5;
+        return password.length >= 6;
       case 1:
         return /\d/.test(password);
       case 2:
@@ -180,60 +118,27 @@ export default function Home() {
       case 3:
         return /[a-z]/.test(password);
       case 4:
-        const months = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ];
-        return months.some((month) =>
-          password.toLowerCase().includes(month.toLowerCase())
-        );
+        return hasSpecialChar(password);
       case 5:
-        const specials = password.match(/[@#$%^&*()_\-+=!]/g) || [];
-        return specials.length >= 3;
+        return hasMonth(password);
       case 6:
-        return productOfDigits(password) === 36;
+        return has3LetterWord(password);
       case 7:
-        return containsGreekLetter(password);
+        return digitsSumEven(password);
       case 8:
-        return containsPrimeWord(password);
+        return hasGreekOrMathSymbol(password);
       case 9:
-        return vowelsInOrder(password);
+        return hasColor(password);
       case 10:
-        return isPalindromeOrEnglishWord(password);
+        return maxThreeSameChars(password);
       case 11:
-        return sumCharCodesDivisibleBy101(password);
+        return hasElement(password);
       case 12:
-        return countDifferentEmojis(password);
+        return hasProgrammingLanguage(password);
       case 13:
-        return containsChemicalElements(password);
+        return hasPalindromeFragment(password);
       case 14:
-        return containsPangramFragment(password);
-      case 15:
-        return maxTwoSameChars(password);
-      case 16:
-        return exactlyOneUnderscoreAndDash(password);
-      case 17:
-        return validRomanNumeral(password);
-      case 18:
         return startEndDifferent(password);
-      case 19:
-        return threeIncreasingDigits(password);
-      case 20:
-        return noWhitespace(password);
-      case 21:
-        return isFibonacci(password.length);
-      case 22:
-        return containsProgrammingLanguage(password);
       default:
         return false;
     }
@@ -261,7 +166,7 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <p className={styles.title}>Impossible Password</p>
+      <p className={styles.title}>Impossible Password (Lite Edition)</p>
       <div className={styles.inputContainer}>
         <label htmlFor="passwordInput">Choose a password</label>
         <textarea
