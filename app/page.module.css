@@ -1,70 +1,87 @@
 .container {
   max-width: 600px;
-  margin: 40px auto;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  padding: 0 20px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
 }
 
 .title {
   font-size: 2rem;
   font-weight: 700;
-  text-align: center;
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 .inputContainer {
   margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 }
 
 .textarea {
   width: 100%;
   font-size: 1.5rem;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  line-height: 1.5;
+  padding: 0.5rem;
   resize: none;
-  overflow: hidden;
-  font-family: inherit;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+  min-height: 40px;
+  line-height: 1.7;
+}
+
+.textarea:focus {
+  border-color: #0070f3;
+  outline: none;
 }
 
 .rulesContainer {
-  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px;
 }
 
 .ruleItem {
-  display: flex;
-  align-items: center;
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  border-left: 5px solid #ccc;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-  gap: 10px;
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  user-select: none;
 }
 
 .pass {
-  border-color: #4caf50;
-  background-color: #e6f4ea;
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .fail {
-  border-color: #f44336;
-  background-color: #fdecea;
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
-.ruleIcon {
-  font-size: 1.2rem;
-  flex-shrink: 0;
-}
-
-.successMessage {
-  margin-top: 1.5rem;
-  color: #4caf50;
+.success {
+  margin-top: 1rem;
   font-weight: 700;
-  font-size: 1.25rem;
+  color: #0a8a00;
   text-align: center;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 480px) {
+  .container {
+    margin: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .textarea {
+    font-size: 0.9rem;
+  }
+
+  .ruleItem {
+    font-size: 0.8rem;
+  }
 }

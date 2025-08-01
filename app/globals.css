@@ -11,3 +11,9 @@ body {
 p {
   margin-bottom: 6px;
 }
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
