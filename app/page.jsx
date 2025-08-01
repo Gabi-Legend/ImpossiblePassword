@@ -1,10 +1,12 @@
 "use client";
 
 import styles from "@/app/page.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
-  const [password, handlePasswordChange] = useState("");
+  const [password, setPassword] = useState("");
+  const [currentStep, setCurrentStep] = useState(0);
+
   const rules = [
     "Minimum 5 characters",
     "Must include at least 1 number",
@@ -12,16 +14,59 @@ export default function Home() {
     "Must include the full name of one month (e.g. 'January')",
     "Must include at least 3 special characters (e.g. @, #, $)",
     "All digits must multiply to exactly 36",
-    "Must include at least one Greek letter (e.g. α, β, γ)",
-    "Must contain a prime number written in words (e.g. 'seven')",
-    "All vowels (a, e, i, o, u) must appear in alphabetical order",
-    "Reversed password must form a valid English word or palindrome",
-    "Sum of all character charCodes must be divisible by 101",
-    "Must include at least 2 different emoji",
-    "Must include the abbreviation of 2 chemical elements (e.g. 'Na', 'Cl')",
-    "Must contain a full pangram fragment (e.g. 'quick brown fox')",
-    "Cannot contain the same character more than twice",
+    // ... poți adăuga restul aici când vrei
   ];
+
+  // Helper: calculează produsul cifrelor din parolă
+  function productOfDigits(str) {
+    const digits = str.match(/\d/g);
+    if (!digits) return 0;
+    return digits.reduce((acc, d) => acc * Number(d), 1);
+  }
+
+  function checkRule(password, ruleIndex) {
+    switch (ruleIndex) {
+      case 0:
+        return password.length >= 5;
+      case 1:
+        return /\d/.test(password);
+      case 2:
+        return /[A-Z]/.test(password);
+      case 3:
+        // verifică dacă parola conține numele complet al unei luni (litere mari/lit)
+        const months = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        return months.some((month) =>
+          password.toLowerCase().includes(month.toLowerCase())
+        );
+      case 4:
+        // cel puțin 3 caractere speciale dintr-un set dat
+        const specials = password.match(/[@#$%^&*()_\-+=!]/g) || [];
+        return specials.length >= 3;
+      case 5:
+        return productOfDigits(password) === 36;
+      default:
+        return false;
+    }
+  }
+
+  useEffect(() => {
+    if (currentStep < rules.length && checkRule(password, currentStep)) {
+      setCurrentStep(currentStep + 1);
+    }
+  }, [password, currentStep]);
 
   return (
     <div className={styles.container}>
@@ -31,15 +76,20 @@ export default function Home() {
         <input
           type="text"
           value={password}
-          onChange={(e) => {
-            handlePasswordChange(e.target.value);
-          }}
+          onChange={(e) => setPassword(e.target.value)}
         />
       </div>
       <div className={styles.rulesContainer}>
-        {rules.map((rule, index) => {
-          return <div key={index}>{rule}</div>;
-        })}
+        {rules.slice(0, currentStep + 1).map((rule, index) => (
+          <div key={index} style={{ marginBottom: "8px" }}>
+            {rule}
+          </div>
+        ))}
+        {currentStep === rules.length && (
+          <div style={{ marginTop: "20px", color: "green" }}>
+            🎉 Password meets all the rules!
+          </div>
+        )}
       </div>
     </div>
   );
